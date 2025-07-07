@@ -44,4 +44,45 @@ poetry build
 
 ### in databricks w/ init_script
 
-[//]: # (TODO)
+* Add Wheel
+  * wheel upload 용 Volume 생성 후 upload
+    * `/Volumes/<CATALOG>/<DATABASE>/<VOLUME_NAME>/ddbxutils-<VERSION>-py3-none-any.whl`
+  * Libraries
+    * `/Volumes/<CATALOG>/<DATABASE>/<VOLUME_NAME>/ddbxutils-<VERSION>-py3-none-any.whl`
+* `/Volumes/<CATALOG>/<DATABASE>/<VOLUME_NAME>/init_script_ddbxutils.sh`
+  ```shell
+  #! /bin/bash
+
+  STARTUP_SCRIPT=/tmp/pyspark_startup.py
+
+  cat >> ${STARTUP_SCRIPT} << EOF
+
+  prefix = 'PYTHONSTARTUP_ddbxutils'
+  print(f'{prefix} custom startup script loading...')
+  try:
+    import ddbxutils
+    print(f'{prefix} Custom modules [ddbxutils] are loaded.')
+  except Exception as e:
+    print(f'{prefix} e={e}')
+    print(f'{prefix} import ddbxutils failed')
+  EOF
+  ```
+* Spark config
+  ```text
+  spark.executorEnv.PYTHONSTARTUP /tmp/pyspark_startup.py
+  ```
+* Environment variables
+  ```shell
+  PYTHONSTARTUP=/tmp/pyspark_startup.py
+  ```
+* Init scripts
+  ```text
+  /Volumes/<CATALOG>/<DATABASE>/<VOLUME_NAME>/init_script_ddbxutils.sh
+  ```
+* Usage
+  ```python
+  # dbutils.widgets.text('rawdate', '2025-05-24', 'Raw Date')
+  # dbutils.widgets.text('next_day', '{{add_days(rawdate, "%Y-%m-%d", "", 1)}}', 'Next Day')
+  next_day = ddbxutils.widgets.get('next_day')
+  # next_day: 2025-05-25
+  ```

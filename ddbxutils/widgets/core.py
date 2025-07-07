@@ -1,5 +1,7 @@
-from ddbxutils.functions import add_days, add_datetime
+from databricks.sdk import WorkspaceClient
 from jinja2 import Environment
+
+from ddbxutils.functions import add_days, add_datetime
 
 environment = Environment()
 environment.globals['add_days'] = add_days
@@ -10,14 +12,15 @@ class WidgetImpl:
     dbutils = None
     rendered_widget_values = None
 
-    def __init__(self, dbutils):
-        self.refresh(dbutils)
+    def __init__(self):
+        self.refresh()
 
-    def refresh(self, dbutils):
+    def refresh(self):
         """
         위젯의 값을 설정하거나 추가합니다.
         """
-        self.dbutils = dbutils
+        if self.dbutils is None:
+            self.dbutils = WorkspaceClient().dbutils
         widget_values = self.dbutils.widgets.getAll()
         self.rendered_widget_values = {key: environment.from_string(value).render(widget_values) for key, value in widget_values.items()}
 
