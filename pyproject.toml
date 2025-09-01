@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "databricks-ddbxutils"
-version = "0.3.0"
+version = "0.4.0"
 description = "extends databricks dbutils"
 authors = ["Haneul Kim <haneul.kim@data-dynamics.io>"]
 readme = "README.md"
