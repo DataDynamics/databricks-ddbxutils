@@ -8,11 +8,11 @@ packages = [{ include = "ddbxutils" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-databricks-sdk = "^0.64.0"
+databricks-sdk = "^0.65.0"
 dotenv = "^0.9.9"
 jinja2 = "^3.1.6"
 python-dateutil = "^2.9.0.post0"
-pyspark = "^4.0.0"
+pyspark = "^4.0.1"
 pyarrow = "20.0.0"
 cloudpickle = "^3.1.1"
 pytz = "^2025.2"
