@@ -363,6 +363,12 @@ class EnvConfig:
         yaml_value = self._config.get(key, default)
         return self._env_override(key.upper(), yaml_value)
 
+    def __getitem__(self, key: str) -> Any:
+        value = self.get(key)
+        if value is None and key not in self._config:
+            raise KeyError(key)
+        return value
+
     def __repr__(self) -> str:
         prefix = f", prefix='{self.project_prefix}'" if self.project_prefix else ""
         return f"EnvConfig(env='{self.env}', catalog='{self.catalog}', schema='{self.schema}'{prefix})"
