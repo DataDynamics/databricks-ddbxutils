@@ -19,8 +19,8 @@ dependencies = [
     "python-dateutil>=2.9.0.post0,<3.0.0",
     "pyspark>=4.0.0,<5.0.0",
     "pyarrow==20.0.0",
-    "cloudpickle>=3.1.1,<4.0.0"
-    "pytz>=2026.1.post1"
+    "cloudpickle>=3.1.1,<4.0.0",
+    "pytz>=2026.1.post1",
     "PyYAML==6.0.3",
 ]
 
