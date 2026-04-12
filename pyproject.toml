@@ -26,7 +26,10 @@ dependencies = [
 
 [tool.hatch.build.targets.wheel]
 packages = [
-    "src/ddbxutils",
-    "src/io",
-    "src/utils",
+    "ddbxutils",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
 ]
