@@ -138,7 +138,7 @@ class EnvConfig:
         config_path: Optional[str] = None,
     ):
         self.env = env or os.environ.get("ENV", "dev")
-        self.project_prefix = project_prefix
+        self.project_prefix = project_prefix or os.environ.get("PROJECT_PREFIX")
 
         if self.env not in ENV_DEFAULTS:
             raise ValueError(
@@ -149,8 +149,12 @@ class EnvConfig:
         self.catalog = defaults["catalog"]
         self.schema = defaults["schema"]
 
-        self.config_path = config_path or self._env_override(
-            "CONFIG_PATH", DEFAULT_CONFIG_PATH
+        # CONFIG_PATH 우선순위: 생성자 인자 > {PREFIX}__CONFIG_PATH > CONFIG_PATH > 기본값
+        self.config_path = (
+            config_path
+            or self._env_override("CONFIG_PATH", None)
+            or os.environ.get("CONFIG_PATH")
+            or DEFAULT_CONFIG_PATH
         )
 
         # Jinja2 환경 초기화
@@ -287,16 +291,13 @@ class EnvConfig:
         config = self.__dict__.get("_config", {})
         if name in config:
             return self._env_override(name.upper(), config[name])
+        builtin_keys = ["env", "project_prefix", "config_path", "catalog", "schema"]
+        yaml_keys = list(config.keys())
+        available = builtin_keys + [k for k in yaml_keys if k not in builtin_keys]
         raise AttributeError(
             f"'{type(self).__name__}'에 '{name}' 설정이 없습니다. "
-            f"사용 가능: {list(config.keys())}"
+            f"사용 가능: {available}"
         )
-
-    def __getitem__(self, key: str) -> Any:
-        return self.get(key)
-
-    def __contains__(self, key: str) -> bool:
-        return key in self._config
 
     # =========================================================================
     # 내부 메서드
@@ -355,34 +356,57 @@ class EnvConfig:
     def full_table_name(self) -> str:
         return f"{self.catalog}.{self.schema}"
 
-    @property
     def keys(self) -> list:
-        return list(self._config.keys())
+        builtin_keys = list(self._builtin_keys().keys())
+        yaml_keys = list(self._config.keys())
+        return builtin_keys + [k for k in yaml_keys if k not in builtin_keys]
+
+    def _builtin_keys(self) -> dict:
+        return {
+            "env": self.env,
+            "project_prefix": self.project_prefix,
+            "config_path": self.config_path,
+            "catalog": self.catalog,
+            "schema": self.schema,
+        }
 
     def get(self, key: str, default: Any = None) -> Any:
+        builtins = self._builtin_keys()
+        if key in builtins:
+            return self._env_override(key.upper(), builtins[key])
         yaml_value = self._config.get(key, default)
         return self._env_override(key.upper(), yaml_value)
 
     def __getitem__(self, key: str) -> Any:
-        value = self.get(key)
-        if value is None and key not in self._config:
+        builtins = self._builtin_keys()
+        if key in builtins:
+            return self._env_override(key.upper(), builtins[key])
+        if key not in self._config:
             raise KeyError(key)
-        return value
+        return self._env_override(key.upper(), self._config[key])
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._builtin_keys() or key in self._config
 
     def __repr__(self) -> str:
-        prefix = f", prefix='{self.project_prefix}'" if self.project_prefix else ""
-        return f"EnvConfig(env='{self.env}', catalog='{self.catalog}', schema='{self.schema}'{prefix})"
+        project_prefix = (
+            f", project_prefix='{self.project_prefix}'" if self.project_prefix else ""
+        )
+        return (
+            f"EnvConfig(env='{self.env}', catalog='{self.catalog}', "
+            f"schema='{self.schema}'{project_prefix})"
+        )
 
     def print_summary(self):
         print("=" * 60)
         print(f"  🔧 환경 설정 요약")
         print("=" * 60)
-        print(f"  환경          : {self.env}")
-        print(f"  PREFIX       : {self.project_prefix or '(미설정)'}")
-        print(f"  카탈로그      : {self.catalog}")
-        print(f"  스키마        : {self.schema}")
-        print(f"  테이블 경로   : {self.full_table_name}")
-        print(f"  설정 파일     : {self.config_path}")
+        print(f"  환경             : {self.env}")
+        print(f"  PROJECT_PREFIX  : {self.project_prefix or '(미설정)'}")
+        print(f"  카탈로그          : {self.catalog}")
+        print(f"  스키마            : {self.schema}")
+        print(f"  테이블 경로       : {self.full_table_name}")
+        print(f"  설정 파일         : {self.config_path}")
         if self._config:
             print(f"\n  📋 설정 값 ({len(self._config)}개):")
             for key in sorted(self._config.keys()):
