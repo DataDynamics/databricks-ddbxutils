@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 # uv
 [project]
 name = "databricks-ddbxutils"
-version = "0.5.0"
+version = "0.6.0"
 description = "extends databricks dbutils"
 authors = [
     { name = "Haneul Kim", email = "haneul.kim@data-dynamics.io" },
