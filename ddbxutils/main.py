@@ -12,3 +12,7 @@ print(f'업데이트된 next_day 값: {updated_value}')
 # 존재하지 않는 위젯 가져오기
 other_value = ddbxutils.widgets.get('another_widget')
 print(f'another_widget 값: {other_value}')
+
+
+config = EnvConfig()
+config.print_summary()
