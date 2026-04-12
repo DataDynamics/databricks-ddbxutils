@@ -107,9 +107,14 @@ class TestYamlLoading:
         cfg = EnvConfig(env="dev", config_path=str(tmp_path / "settings.yml"))
         assert cfg.app_name == "myapp"
 
-    def test_keys_property(self, tmp_path):
+    def test_keys_method(self, tmp_path):
         cfg = EnvConfig(env="dev", config_path=write_yaml(tmp_path, self.YAML))
-        assert set(cfg.keys) == {"run_date", "bucket", "max_retries"}
+        keys = cfg.keys()
+        assert set(keys) == {
+            "env", "project_prefix", "config_path", "catalog", "schema",
+            "run_date", "bucket", "max_retries",
+        }
+        assert keys[:5] == ["env", "project_prefix", "config_path", "catalog", "schema"]
 
 
 # ---------------------------------------------------------------------------
