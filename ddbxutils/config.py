@@ -315,17 +315,26 @@ class EnvConfig:
         }
 
     def _load_config(self) -> dict:
-        try:
-            with open(self.config_path, "r") as f:
-                config = yaml.safe_load(f)
-                print(f"✅ 설정 파일 로드: {self.config_path}")
-                return config or {}
-        except FileNotFoundError:
-            print(f"⚠️ 설정 파일 없음: {self.config_path} - 기본값 사용")
-            return {}
-        except yaml.YAMLError as e:
-            print(f"❌ YAML 파싱 오류: {e}")
-            return {}
+        candidates = [self.config_path]
+        if self.config_path.endswith(".yml"):
+            candidates.append(self.config_path[:-4] + ".yaml")
+        elif self.config_path.endswith(".yaml"):
+            candidates.append(self.config_path[:-5] + ".yml")
+
+        for path in candidates:
+            try:
+                with open(path, "r") as f:
+                    config = yaml.safe_load(f)
+                    print(f"✅ 설정 파일 로드: {path}")
+                    return config or {}
+            except FileNotFoundError:
+                continue
+            except yaml.YAMLError as e:
+                print(f"❌ YAML 파싱 오류: {e}")
+                return {}
+
+        print(f"⚠️ 설정 파일 없음: {self.config_path} - 기본값 사용")
+        return {}
 
     def _resolve_env_values(self, raw: dict) -> dict:
         resolved = {}
