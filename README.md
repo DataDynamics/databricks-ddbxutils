@@ -25,6 +25,27 @@ dbutils 로 부족한 부분을 확장한 ddbxutils
 환경변수 {PREFIX}__{KEY}  >  YAML 설정 (Jinja2 렌더링 후)  >  ENV_DEFAULTS 기본값
 ```
 
+### 초기화 옵션 환경변수
+
+`EnvConfig()` 생성자 인자를 생략하면 아래 환경변수에서 값을 읽어옵니다. 생성자 인자가 명시되면 환경변수보다 우선합니다.
+
+| 환경변수 | 설명 | 기본값 |
+| --- | --- | --- |
+| `ENV` | 환경 이름 (`dev` / `stg` / `prd`) | `dev` |
+| `PROJECT_PREFIX` | `{PREFIX}__{KEY}` 오버라이드용 프리픽스 | (없음) |
+| `CONFIG_PATH` | YAML 설정 파일 경로 | `conf/settings.yml` |
+| `{PREFIX}__CONFIG_PATH` | 프리픽스 기반 경로 지정 (최우선 환경변수) | - |
+
+```shell
+export ENV=prd
+export PROJECT_PREFIX=MYAPP
+export CONFIG_PATH=conf/my-settings.yml
+```
+
+```python
+cfg = EnvConfig()   # 위 환경변수로 초기화
+```
+
 ### 기본 사용법
 
 ```python
@@ -36,17 +57,20 @@ cfg = EnvConfig()
 # 명시적 환경 지정 + project_prefix 오버라이드 활성화
 cfg = EnvConfig(env="prd", project_prefix="MYAPP")
 
-# 설정값 접근 (세 가지 방법 모두 동일)
-cfg.run_date          # 속성 접근
-cfg["run_date"]       # dict 스타일
+# 설정값 접근 (속성 / dict / get 모두 동일하게 동작)
+cfg.run_date                       # 속성 접근
+cfg["run_date"]                    # dict 스타일
 cfg.get("run_date", "2024-01-01")  # 기본값 지원
 
-# 환경 정보
-cfg.env               # "dev" / "stg" / "prd"
-cfg.catalog           # "dev_catalog" (ENV_DEFAULTS 기반)
-cfg.schema            # "analytics_dev"
+# 기본 키(env / catalog / schema)도 동일한 방식으로 접근 가능
+cfg.env              == cfg["env"]     == cfg.get("env")
+cfg.catalog          == cfg["catalog"] == cfg.get("catalog")
+cfg.schema           == cfg["schema"]  == cfg.get("schema")
+
+# 기타
 cfg.full_table_name   # "dev_catalog.analytics_dev"
-cfg.keys              # 로드된 설정 키 목록
+cfg.keys()            # 기본 키 + YAML 키 목록
+"run_date" in cfg     # 포함 여부 확인
 
 # 요약 출력
 cfg.print_summary()
