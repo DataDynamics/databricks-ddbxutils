@@ -237,7 +237,7 @@ cfg.catalog    # "override_catalog"
 | `{{storage_path}}` | 다른 YAML 설정값 직접 참조 |
 | `{{env.HOME}}` | OS 환경변수 참조 |
 | `{{ENV}}`, `{{catalog}}`, `{{schema}}` | 현재 환경 정보 |
-| `{{secrets/SCOPE/KEY}}` | `dbutils.secrets.get()` 호출 |
+| `{{secrets/SCOPE/KEY}}` | `dbutils.secrets.get('SCOPE', 'KEY')` 호출 |
 
 ---
 
