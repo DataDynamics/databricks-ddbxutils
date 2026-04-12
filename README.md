@@ -8,6 +8,18 @@ dbutils 로 부족한 부분을 확장한 ddbxutils
 * [x] `EnvConfig` — YAML 기반 환경별 설정 로더 (Jinja2 템플릿, secrets, 변수 참조, 날짜/숫자/문자열 연산)
 * [x] `PythonFunctionDataSource` — PySpark v2 DataSource API 기반 커스텀 데이터소스
 
+## Install
+
+```shell
+pip install databricks-ddbxutils
+```
+
+## Testing
+
+```shell
+uv run pytest tests/ -v
+```
+
 ---
 
 ## EnvConfig
@@ -226,33 +238,6 @@ cfg.catalog    # "override_catalog"
 | `{{env.HOME}}` | OS 환경변수 참조 |
 | `{{ENV}}`, `{{catalog}}`, `{{schema}}` | 현재 환경 정보 |
 | `{{secrets/SCOPE/KEY}}` | `dbutils.secrets.get()` 호출 |
-
----
-
-## Install
-
-```shell
-pip install databricks-ddbxutils
-```
-
-## Project Build
-
-```shell
-uv sync          # 의존성 설치
-uv build         # wheel/sdist 빌드 (dist/ 에 생성)
-```
-
-PyPI 배포 (`~/.pypirc` 에 토큰 필요):
-
-```shell
-python3.12 -m twine upload dist/*
-```
-
-## Testing
-
-```shell
-uv run pytest tests/ -v
-```
 
 ---
 
