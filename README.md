@@ -2,7 +2,7 @@
 
 `ddbxutils` extends Databricks `dbutils` with features it lacks out of the box.
 
-> 한국어 문서는 [README.ko.md](README.ko.md) 를 참고하세요.
+> 한국어 문서는 [README.ko.md](https://github.com/DataDynamics/databricks-ddbxutils/blob/main/README.ko.md) 를 참고하세요.
 
 ## Features
 
