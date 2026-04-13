@@ -4,9 +4,9 @@ dbutils 로 부족한 부분을 확장한 ddbxutils
 
 ## Feature
 
-* [x] `dbutils.widgets` 에 jinja2 template 적용
-* [x] `EnvConfig` — YAML 기반 환경별 설정 로더 (Jinja2 템플릿, secrets, 변수 참조, 날짜/숫자/문자열 연산)
-* [x] `PythonFunctionDataSource` — PySpark v2 DataSource API 기반 커스텀 데이터소스
+* [x] `ddbxutils.widgets` - `dbutils.widgets` 에 jinja2 template 적용
+* [x] `EnvConfig` - YAML 기반 환경별 설정 로더 (Jinja2 템플릿, secrets, 변수 참조, 날짜/숫자/문자열 연산)
+* [x] `PythonFunctionDataSource` - PySpark v2 DataSource API 기반 커스텀 데이터소스
 
 ## Install
 
@@ -27,9 +27,9 @@ uv run pytest tests/ -v
 ### 특징
 
 - **하나의 YAML 파일**에서 `dev` / `stg` / `prd` 환경값을 키 기준으로 나란히 배치
-- **Jinja2 템플릿** — secrets 참조, 변수 참조, 날짜 계산, 숫자 산술, 문자열 연산 지원
-- **다중 패스 렌더링** — 변수 간 의존성을 최대 10 패스로 자동 해결
-- **`project_prefix`** — `PREFIX__KEY` 환경변수로 특정 키를 런타임에 오버라이드
+- **Jinja2 템플릿** - secrets 참조, 변수 참조, 날짜 계산, 숫자 산술, 문자열 연산 지원
+- **다중 패스 렌더링** - 변수 간 의존성을 최대 10 패스로 자동 해결
+- **`project_prefix`** - `PREFIX__KEY` 환경변수로 특정 키를 런타임에 오버라이드
 
 ### 우선순위
 

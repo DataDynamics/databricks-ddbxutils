@@ -6,9 +6,9 @@
 
 ## Features
 
-* [x] Jinja2 template support for `dbutils.widgets`
-* [x] `EnvConfig` — a YAML-based, environment-aware config loader (Jinja2 templates, secrets, variable references, date/number/string operations)
-* [x] `PythonFunctionDataSource` — a custom data source built on the PySpark v2 DataSource API
+* [x] `ddbxutils.widgets` - Jinja2 template support for `dbutils.widgets`
+* [x] `EnvConfig` - a YAML-based, environment-aware config loader (Jinja2 templates, secrets, variable references, date/number/string operations)
+* [x] `PythonFunctionDataSource` - a custom data source built on the PySpark v2 DataSource API
 
 ## Install
 
@@ -29,9 +29,9 @@ uv run pytest tests/ -v
 ### Highlights
 
 - **Single YAML file** that places `dev` / `stg` / `prd` values side by side, keyed by config name
-- **Jinja2 templates** — secret references, variable references, date arithmetic, numeric arithmetic, and string operations
-- **Multi-pass rendering** — resolves inter-variable dependencies automatically in up to 10 passes
-- **`project_prefix`** — override any key at runtime via a `PREFIX__KEY` environment variable
+- **Jinja2 templates** - secret references, variable references, date arithmetic, numeric arithmetic, and string operations
+- **Multi-pass rendering** - resolves inter-variable dependencies automatically in up to 10 passes
+- **`project_prefix`** - override any key at runtime via a `PREFIX__KEY` environment variable
 
 ### Resolution priority
 
