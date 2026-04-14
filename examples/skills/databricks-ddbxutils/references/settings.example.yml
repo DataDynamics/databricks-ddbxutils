@@ -1,0 +1,95 @@
+# =============================================================================
+# databricks-ddbxutils — conf/settings.yml canonical example
+# =============================================================================
+# Copy this file into your project as `conf/settings.yml` (or any path you pass
+# via CONFIG_PATH / EnvConfig(config_path=...)) and trim to your needs.
+#
+# Resolution order (highest to lowest):
+#   1. env var {PROJECT_PREFIX}__{KEY}
+#   2. this YAML value (after Jinja2 multi-pass rendering, up to 10 passes)
+#   3. ENV_DEFAULTS fallback for built-ins (catalog, schema)
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Per-environment scalar values
+# -----------------------------------------------------------------------------
+storage_path:
+  dev: "s3://my-project-dev/data"
+  stg: "s3://my-project-stg/data"
+  prd: "s3://my-project-prd/data"
+
+retry_count:
+  dev: 1
+  stg: 2
+  prd: 3
+
+log_level:
+  dev: DEBUG
+  stg: INFO
+  prd: WARNING
+
+
+# -----------------------------------------------------------------------------
+# Date arithmetic (values reference each other — resolved via multi-pass render)
+# -----------------------------------------------------------------------------
+run_date:       "{{ today() }}"
+start_date:     "{{ add_days(run_date, -7) }}"
+last_month:     "{{ add_months(run_date, -1) }}"
+month_start:    "{{ start_of_month(run_date) }}"
+month_end:      "{{ end_of_month(run_date) }}"
+partition_date: "{{ format_date(add_days(run_date, -1), '%Y%m%d') }}"
+year_month:     "{{ format_date(run_date, '%Y%m') }}"
+
+
+# -----------------------------------------------------------------------------
+# Numeric arithmetic
+# -----------------------------------------------------------------------------
+batch_size:
+  dev: 1000
+  stg: 5000
+  prd: 10000
+
+double_batch: "{{ batch_size * 2 }}"
+page_count:   "{{ batch_size // 256 }}"
+
+
+# -----------------------------------------------------------------------------
+# String operations
+# -----------------------------------------------------------------------------
+app_name:     "my_project"
+upper_app:    "{{ app_name | upper }}"
+archive_path: "{{ storage_path | replace('/data', '/archive') }}"
+full_table:   "{{ catalog ~ '.' ~ schema ~ '.events' }}"
+
+
+# -----------------------------------------------------------------------------
+# Variable references + path composition
+# -----------------------------------------------------------------------------
+full_path: "{{ storage_path }}/processed/{{ format_date(run_date, '%Y/%m/%d') }}"
+
+
+# -----------------------------------------------------------------------------
+# Environment / catalog references
+# -----------------------------------------------------------------------------
+current_env:  "{{ ENV }}"
+table_prefix: "{{ catalog }}.{{ schema }}"
+
+
+# -----------------------------------------------------------------------------
+# Secrets — pre-processed BEFORE Jinja2 rendering
+#   On Databricks : dbutils.secrets.get(scope, key)
+#   Off-Databricks: falls back to env var SECRET_{SCOPE}_{KEY}
+# -----------------------------------------------------------------------------
+db_password:
+  dev: "{{secrets/dev-scope/db-password}}"
+  stg: "{{secrets/stg-scope/db-password}}"
+  prd: "{{secrets/prd-scope/db-password}}"
+
+api_key: "{{secrets/common-scope/api-key}}"
+
+
+# -----------------------------------------------------------------------------
+# Shared across environments
+# -----------------------------------------------------------------------------
+version: "1.0.0"

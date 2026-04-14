@@ -1,0 +1,68 @@
+{
+  "_comment": "databricks-ddbxutils — reference snippets for Databricks Jobs API / cluster definitions. Paste the relevant block into your job JSON. Replace <VERSION> / <catalog>/<schema>/<volume> / PROJECT_PREFIX as needed.",
+
+  "job_with_pypi_library": {
+    "name": "my-etl-prd",
+    "tasks": [
+      {
+        "task_key": "run_etl",
+        "notebook_task": {
+          "notebook_path": "/Workspace/Users/me@example.com/etl/main"
+        },
+        "new_cluster": {
+          "spark_version": "15.4.x-scala2.12",
+          "node_type_id": "i3.xlarge",
+          "num_workers": 2,
+          "spark_env_vars": {
+            "ENV": "prd",
+            "PROJECT_PREFIX": "MYAPP",
+            "CONFIG_PATH": "/Volumes/main/ops/config/conf/settings.yml"
+          }
+        },
+        "libraries": [
+          { "pypi": { "package": "databricks-ddbxutils==<VERSION>" } }
+        ]
+      }
+    ]
+  },
+
+  "job_with_volume_wheel": {
+    "name": "my-etl-prd",
+    "tasks": [
+      {
+        "task_key": "run_etl",
+        "notebook_task": {
+          "notebook_path": "/Workspace/Users/me@example.com/etl/main"
+        },
+        "new_cluster": {
+          "spark_version": "15.4.x-scala2.12",
+          "node_type_id": "i3.xlarge",
+          "num_workers": 2,
+          "spark_env_vars": {
+            "ENV": "prd",
+            "PROJECT_PREFIX": "MYAPP"
+          }
+        },
+        "libraries": [
+          { "whl": "/Volumes/main/ops/wheels/ddbxutils-<VERSION>-py3-none-any.whl" }
+        ]
+      }
+    ]
+  },
+
+  "all_purpose_cluster_env_vars_only": {
+    "_comment": "For an existing All Purpose cluster, paste only the spark_env_vars block into Advanced options → Spark → Environment variables (one KEY=VALUE per line, without the JSON wrapping).",
+    "spark_env_vars": {
+      "ENV": "prd",
+      "PROJECT_PREFIX": "MYAPP",
+      "CONFIG_PATH": "/Volumes/main/ops/config/conf/settings.yml"
+    }
+  },
+
+  "per_env_job_variants": {
+    "_comment": "Same notebook + same wheel, three job definitions differing only in ENV. Typical prd/stg/dev layout.",
+    "dev": { "spark_env_vars": { "ENV": "dev", "PROJECT_PREFIX": "MYAPP" } },
+    "stg": { "spark_env_vars": { "ENV": "stg", "PROJECT_PREFIX": "MYAPP" } },
+    "prd": { "spark_env_vars": { "ENV": "prd", "PROJECT_PREFIX": "MYAPP" } }
+  }
+}
